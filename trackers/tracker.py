@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 from ultralytics import YOLO
 import supervision as sv
 import pickle
@@ -139,6 +140,19 @@ class Tracker:
 
         return frame
     
+    def draw_triangle(self,frame,bbox,color):
+        y= bbox[1]
+        x,_ = get_center_of_bbox(bbox)
+
+        triangle_points = np.array([
+            [x,y],
+            [x-10,y-20],
+            [x+10,y-20],
+        ])
+        cv2.drawContours(frame, [triangle_points],0,color, cv2.FILLED)
+        # cv2.drawContours(frame, [triangle_points],0,(0,0,0), 2)
+
+        return frame
 
     def draw_annotations(self,video_frames, tracks):
         output_video_frames= []

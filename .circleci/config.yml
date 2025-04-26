@@ -1,0 +1,27 @@
+version: 2.1
+
+jobs:
+  test:
+    docker:
+      - image: cimg/python:3.10  # CircleCI official Python image
+    steps:
+      - checkout  # pull your code
+      - run:
+          name: Install pip and venv
+          command: |
+            python -m ensurepip
+            python -m venv venv
+            . venv/bin/activate
+            pip install --upgrade pip
+            pip install opencv-python ultralytics supervision pytest
+      - run:
+          name: Run tests
+          command: |
+            . venv/bin/activate
+            pytest tests/
+
+workflows:
+  version: 2
+  test_and_build:
+    jobs:
+      - test
