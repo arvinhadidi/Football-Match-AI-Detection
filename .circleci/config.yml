@@ -13,7 +13,7 @@ jobs:
             python -m venv venv
             . venv/bin/activate
             pip install --upgrade pip
-            pip install opencv-python ultralytics supervision pytest
+            pip install opencv-python ultralytics supervision pytest numpy==1.26.4
       - run:
           name: Set PYTHONPATH
           command: echo "PYTHONPATH=$PWD" >> $BASH_ENV
