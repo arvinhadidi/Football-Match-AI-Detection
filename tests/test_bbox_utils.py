@@ -1,4 +1,4 @@
-from utils.bbox_utils import get_center_of_bbox
+from ..utils.bbox_utils import get_center_of_bbox
 
 def test_get_center_of_bbox():
     bbox = [10, 20, 30, 40]
