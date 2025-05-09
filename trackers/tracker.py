@@ -21,7 +21,7 @@ class Tracker:
         # run thru all frames of video, in steps of eg. 20 
         for i in range (0, len(frames), batch_size):
             print(f"Processing frames {i} to {min(i+batch_size, len(frames))}")  # Debug print
-            detections_batch = self.model.predict(frames[i:i+batch_size], conf=0.1)
+            detections_batch = self.model.predict(frames[i:i+batch_size], conf=0.3) # CHANGED CONF FROM 0.1 TO 0.3
             detections += detections_batch
 
         return detections
@@ -75,17 +75,16 @@ class Tracker:
 
                 if class_id == class_names_inverted["player"]:
                     tracks["players"][frame_num][track_id] = {"bbox": bbox}
-                elif class_id == class_names_inverted["goalkeeper"]:
+                if class_id == class_names_inverted["goalkeeper"]:
                     tracks["goalkeepers"][frame_num][track_id] = {"bbox": bbox}
-                elif class_id == class_names_inverted["referee"]:
+                if class_id == class_names_inverted["referee"]:
                     tracks["referees"][frame_num][track_id] = {"bbox": bbox}
 
-        for frame_detection in detection_supervision:
-            bbox = frame_detection[0].tolist()
-            class_id = frame_detection[3]
-
-            if class_id == class_names_inverted["ball"]:
-                tracks["ball"][frame_num][1] = {"bbox":bbox}
+            for frame_detection in detection_supervision:
+                bbox = frame_detection[0].tolist()
+                class_id = frame_detection[3]
+                if class_id == class_names_inverted["ball"]:
+                    tracks["ball"][frame_num][1] = {"bbox":bbox}
 
         if stub_path is not None:
             with open(stub_path, "wb") as f:
@@ -145,12 +144,12 @@ class Tracker:
         x,_ = get_center_of_bbox(bbox)
 
         triangle_points = np.array([
-            [x,y],
-            [x-10,y-20],
-            [x+10,y-20],
-        ])
+            [x, y],
+            [x-10, y-20],
+            [x+10, y-20],
+        ], dtype=np.int32)
         cv2.drawContours(frame, [triangle_points],0,color, cv2.FILLED)
-        # cv2.drawContours(frame, [triangle_points],0,(0,0,0), 2)
+        cv2.drawContours(frame, [triangle_points],0,(0,0,0), 2)
 
         return frame
 
@@ -178,7 +177,7 @@ class Tracker:
             
             # Draw ball 
             for track_id, ball in ball_dict.items():
-                frame = self.draw_rectangle(frame, ball["bbox"],(0,255,0))
+                frame = self.draw_triangle(frame, ball["bbox"],(0,255,0))
 
             output_video_frames.append(frame)
 

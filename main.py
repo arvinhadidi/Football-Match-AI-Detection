@@ -5,7 +5,7 @@ from team_assigner import TeamAssigner
 
 def main():
     # read video
-    video_frames = read_video("input_videos/short-input-video.mp4")
+    video_frames = read_video("input_videos/short-input-video.mp4", target_fps=20.0)
 
     #initialise tracker
     tracker = Tracker("models/best.pt")
@@ -29,8 +29,19 @@ def main():
 
     # Assign Player Teams
     team_assigner = TeamAssigner()
-    team_assigner.assign_team_color(video_frames[0], 
-                                    tracks['players'][0])
+
+    # build a clean dict of only “real” players (exclude any referee IDs)
+    first_frame_players = {
+        pid: det
+        for pid, det in tracks['players'][0].items()
+        if pid not in tracks['referees'][0]
+    }
+
+    team_assigner.assign_team_color(video_frames[0],
+                                    first_frame_players)
+
+    # team_assigner.assign_team_color(video_frames[0], 
+    #                                 tracks['players'][0])
     
     # for each frame, assign each player to a team
     for frame_num, player_track in enumerate(tracks['players']):
@@ -43,7 +54,7 @@ def main():
     output_video_frames = tracker.draw_annotations(video_frames, tracks)
 
     # save video
-    save_video(output_video_frames, "output_videos/short_output_vid.avi")
+    save_video(output_video_frames, "output_videos/short-output-video.avi", fps=20.0)
 
 if __name__ == "__main__":
     main()
