@@ -3,6 +3,7 @@ import numpy as np
 from ultralytics import YOLO
 import supervision as sv
 import pickle
+import pandas as pd
 import os
 import sys 
 # sys.path.append('../')
@@ -14,6 +15,30 @@ class Tracker:
     def __init__(self, model_path):
         self.model = YOLO(model_path)
         self.tracker = sv.ByteTrack()
+
+    def interpolate_ball_positions(self, ball_positions):
+        # 1) Build a list of exactly 4 numbers per frame,
+        #    using NaN when the ball was not detected.
+        bbox_list = []
+        for frame_dict in ball_positions:
+            bbox = frame_dict.get(1, {}).get("bbox")
+            if isinstance(bbox, (list, tuple)) and len(bbox) == 4:
+                bbox_list.append(bbox)
+            else:
+                bbox_list.append([np.nan, np.nan, np.nan, np.nan])
+
+        # 2) Create a DataFrame with columns x1,y1,x2,y2
+        df = pd.DataFrame(bbox_list, columns=["x1", "y1", "x2", "y2"])
+
+        # 3) Interpolate missing values then back‑ and forward‑fill edges
+        df = df.interpolate().bfill().ffill()
+
+        # 4) Turn it back into your list‑of‑dicts format
+        smoothed = []
+        for row in df.to_numpy().tolist():
+            smoothed.append({1: {"bbox": row}})
+        return smoothed
+
 
     def detect_frames(self, frames):
         batch_size = 20
@@ -27,13 +52,6 @@ class Tracker:
         return detections
 
     def get_object_tracks(self, frames, read_from_stub=False, stub_path=None):
-
-        # will run after first time
-        # if read_from_stub and stub_path is not None and os.path.exists(stub_path):
-        #     with open(stub_path, "rb") as f:
-        #         tracks = pickle.load(f)
-        #     return tracks
-
 
         detections = self.detect_frames(frames)
 
@@ -170,6 +188,10 @@ class Tracker:
             for track_id, player in player_dict.items():
                 color = player.get("team_color",(0,0,255))
                 frame = self.draw_rectangle(frame, player["bbox"],color, track_id)
+
+                # draw red triangle on player who has ball
+                if player.get("has_ball", False):
+                    frame = self.draw_triangle(frame, player["bbox"], (0,0,255))
 
             # Draw Referee
             for _, referee in referee_dict.items():
