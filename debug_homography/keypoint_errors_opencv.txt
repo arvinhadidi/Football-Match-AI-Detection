@@ -1,0 +1,10 @@
+Keypoint Warping Errors:
+0: LML -> Expected (15.0, 270.0), Got (15.0, 270.0), Error: 0.0 pixels
+1: BLC -> Expected (15.0, 521.0), Got (50.0, 302.2), Error: 221.5 pixels
+2: BRC -> Expected (291.0, 521.0), Got (291.0, 521.0), Error: 0.0 pixels
+3: BR6ML -> Expected (189.0, 521.0), Got (110.0, 506.5), Error: 80.3 pixels
+4: BL6ML -> Expected (117.0, 521.0), Got (117.0, 521.0), Error: 0.0 pixels
+5: BL6MC -> Expected (117.0, 501.0), Got (117.0, 501.0), Error: 0.0 pixels
+
+Average Error: 50.31 pixels
+Max Error: 221.55 pixels
