@@ -9,7 +9,7 @@ import base64
 from inference_sdk import InferenceHTTPClient
 
 # Your model details
-PROJECT_ID = "roboflow-jvuqo/football-field-detection-f07vi"
+PROJECT_ID = "roboflow-jvuqo/football-field-detection-f07vi/15"
 MODEL_VERSION = 1
 confidence = 0.5
 iou_thresh = 0.5
@@ -28,7 +28,8 @@ def return_api_request(frame):
         api_key = os.getenv("ROBOFLOW_API_KEY")
     )
 
-    result = CLIENT.infer(img_b64, model_id="football-field-detection-f07vi/15")
+    result = CLIENT.infer(img_b64, model_id="football-field-detection-f07vi/14")
+    # result = CLIENT.infer(img_b64, model_id="keypoints-on-soccer-pitch/1")
     # print(result)
     return result
 
@@ -95,7 +96,7 @@ def detect_pitch_keypoints(frame):
         x, y = kp["x"], kp["y"]
         code = kp.get("class")
         # drop low-confidence
-        if conf < 0.9:
+        if conf < 0.85:
             continue
         # drop points on the very edge (within 5px)
         if x <= 5 or x >= fw - 5 or y <= 5 or y >= fh - 5:
@@ -117,12 +118,15 @@ def detect_pitch_keypoints(frame):
 def compute_homography(src_pts, dst_pts):
     src = np.ascontiguousarray(src_pts, dtype=np.float32)
     dst = np.ascontiguousarray(dst_pts, dtype=np.float32)
-    H, inlier_mask = refine_homography(src, dst,
-                                   ransac_thresh=3.0,
-                                   reproj_thresh=5.0,
-                                   max_iter=5)
-    if H is None:
-        raise RuntimeError("RANSAC failed, check correspondences")
+    src = np.array(src_pts, dtype=np.float32)
+    dst = np.array(dst_pts, dtype=np.float32)
+    # H, inlier_mask = refine_homography(src, dst,
+    #                                ransac_thresh=3.0,
+    #                                reproj_thresh=5.0,
+    #                                max_iter=5)
+    H, mask = cv2.findHomography(src, dst, method=cv2.RANSAC)
+    # if H is None:
+    #     raise RuntimeError("RANSAC failed, check correspondences")
     return H
 
 def refine_homography(src_pts, dst_pts,

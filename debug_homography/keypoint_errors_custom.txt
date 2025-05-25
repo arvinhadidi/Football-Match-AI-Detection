@@ -1,10 +1,14 @@
 Keypoint Warping Errors:
-0: LML -> Expected (15.0, 270.0), Got (15.0, 270.0), Error: 0.0 pixels
-1: BLC -> Expected (15.0, 521.0), Got (50.0, 302.2), Error: 221.5 pixels
-2: BRC -> Expected (291.0, 521.0), Got (291.0, 521.0), Error: 0.0 pixels
-3: BR6ML -> Expected (189.0, 521.0), Got (110.0, 506.5), Error: 80.3 pixels
-4: BL6ML -> Expected (117.0, 521.0), Got (117.0, 521.0), Error: 0.0 pixels
-5: BL6MC -> Expected (117.0, 501.0), Got (117.0, 501.0), Error: 0.0 pixels
+0: TRC -> Expected (291.0, 15.0), Got (291.0, 15.4), Error: 0.4 pixels
+1: TR18ML -> Expected (221.0, 15.0), Got (235.1, 15.1), Error: 14.1 pixels
+2: TR6ML -> Expected (189.0, 15.0), Got (187.8, 14.5), Error: 1.2 pixels
+3: TR6MC -> Expected (188.0, 35.0), Got (189.6, 34.5), Error: 1.6 pixels
+4: TL6MC -> Expected (116.0, 35.0), Got (116.2, 35.5), Error: 0.5 pixels
+5: TPS -> Expected (150.0, 50.0), Got (154.6, 54.3), Error: 6.3 pixels
+6: TR18MC -> Expected (221.0, 73.0), Got (232.2, 72.7), Error: 11.2 pixels
+7: TRArc -> Expected (183.0, 73.0), Got (182.4, 72.9), Error: 0.6 pixels
+8: TLArc -> Expected (122.0, 73.0), Got (130.9, 71.1), Error: 9.1 pixels
+9: TL18MC -> Expected (84.0, 73.0), Got (84.0, 73.1), Error: 0.1 pixels
 
-Average Error: 50.31 pixels
-Max Error: 221.55 pixels
+Average Error: 4.52 pixels
+Max Error: 14.06 pixels

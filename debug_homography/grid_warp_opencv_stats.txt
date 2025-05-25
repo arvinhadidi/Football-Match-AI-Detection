@@ -1,2 +1,2 @@
-Total points: 858
-Out of bounds: 442 (51.5%)
+Total points: 390
+Out of bounds: 99 (25.4%)

@@ -1,4 +1,4 @@
-Total keypoints in map: 28
+Total keypoints in map: 32
 
 Keypoint Labels and Coordinates:
 TLC: [15, 15]
@@ -29,6 +29,10 @@ BR18ML: [221, 521]
 BL18ML: [84, 521]
 BRArc: [182, 463]
 BLArc: [121, 463]
+TPS: [150, 50]
+TCS: [150, 234]
+BCS: [150, 304]
+BPS: [150, 480]
 
 Potential Issues:
 X range: 15 to 291
