@@ -9,12 +9,15 @@ import sys
 # sys.path.append('../')
 # from utils import get_center_of_bbox, get_bbox_width
 from utils.bbox_utils import get_center_of_bbox, get_bbox_width, get_foot_position
+# from team_assigner.team_assigner import TeamAssigner
+from team_assigner.iter_team_assigner import TeamAssigner
 
 
 class Tracker:
     def __init__(self, model_path):
         self.model = YOLO(model_path)
         self.tracker = sv.ByteTrack()
+        self.team_assigner = TeamAssigner()
 
     def interpolate_ball_positions(self, ball_positions):
         # 1) Build a list of exactly 4 numbers per frame,
@@ -186,8 +189,11 @@ class Tracker:
 
             # Draw Players
             for track_id, player in player_dict.items():
-                color = player.get("team_color",(0,0,255))
-                frame = self.draw_rectangle(frame, player["bbox"],color, track_id)
+                # color = player.get("team_color",(0,0,255))
+                # frame = self.draw_rectangle(frame, player["bbox"],color, track_id)
+                team = self.team_assigner.get_player_team(frame, player["bbox"], track_id)
+                color = self.team_assigner.get_team_color_for_drawing(team)
+                frame = self.draw_rectangle(frame, player["bbox"], color, track_id)
 
                 # draw red triangle on player who has ball
                 if player.get("has_ball", False):

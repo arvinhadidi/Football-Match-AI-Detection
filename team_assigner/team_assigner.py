@@ -6,113 +6,18 @@ class TeamAssigner:
     def __init__(self):
         self.team_colors = {}
         self.player_team_dict = {} # dict of player id and the team they play for
+        self.kmeans = None  # Initialize kmeans as None
+        self.teams_assigned = False  # Track if teams have been assigned
     
-    def get_clustering_model(self,image):
-        # Reshape the image to 2D array
-        image_2d = image.reshape(-1,3)
+    # def get_clustering_model(self,image):
+    #     # Reshape the image to 2D array
+    #     image_2d = image.reshape(-1,3)
 
-        # Preform K-means with 2 clusters
-        kmeans = KMeans(n_clusters=2, init="k-means++",n_init=10)
-        kmeans.fit(image_2d)
+    #     # Preform K-means with 2 clusters
+    #     kmeans = KMeans(n_clusters=2, init="k-means++",n_init=10)
+    #     kmeans.fit(image_2d)
 
-        return kmeans
-
-    # def extract_chest_color(self, image, bbox):
-    #     """
-    #     Extracts dominant chest color from a player's bounding box using clustering.
-
-    #     Parameters:
-    #         image (np.ndarray): The full frame image (BGR).
-    #         bbox (tuple): Bounding box (x1, y1, x2, y2) of the player.
-    #         clustering_model (Callable): A function that returns a fitted clustering model (e.g., KMeans).
-
-    #     Returns:
-    #         int: The predicted player cluster label (int).
-    #     """
-    #     x1, y1, x2, y2 = bbox
-    #     player_crop = image[y1:y2, x1:x2]
-
-    #     # Define chest region as 30% to 55% of height, and center 40% of width
-    #     H = player_crop.shape[0]
-    #     top = int(0.30 * H)
-    #     bottom = int(0.55 * H)
-
-    #     W = player_crop.shape[1]
-    #     left = int(0.30 * W)
-    #     right = int(0.70 * W)
-
-    #     chest = player_crop[top:bottom, left:right]
-
-    #     # Convert to HSV, mask low-saturation
-    #     hsv = cv2.cvtColor(chest, cv2.COLOR_BGR2HSV)
-    #     sat = hsv[:, :, 1]
-    #     mask = sat > 50
-    #     chest_pixels = chest[mask]
-
-    #     # fallback if too few pixels after saturation filter
-    #     if chest_pixels.size < (chest.size // 10):
-    #         chest_pixels = chest.reshape(-1, 3)
-
-    #     # Perform clustering on chest pixels
-    #     kmeans = self.get_clustering_model(chest_pixels)
-
-    #     # Determine cluster of each corner pixel
-    #     h, w = chest.shape[:2]
-    #     corners = [(0, 0), (0, w-1), (h-1, 0), (h-1, w-1)]
-    #     corner_clusters = []
-    #     for y, x in corners:
-    #         pixel = chest[y, x].reshape(1, 3)
-    #         corner_clusters.append(kmeans.predict(pixel)[0])
-
-    #     non_player = max(set(corner_clusters), key=corner_clusters.count)
-    #     player_cl = 1 - non_player  # assume two clusters
-
-    #     return player_cl
-
-    # def get_player_color(self,frame,bbox):
-
-    #     # Make sure bbox values are cast to int before unpacking
-    #     x1, y1, x2, y2 = map(int, bbox)
-
-    #     # Crop the player image from the frame
-    #     player_crop = frame[y1:y2, x1:x2]
-    #     H = player_crop.shape[0]
-    #     W = player_crop.shape[1]
-
-    #     # Define chest region: vertically 30% to 55%, horizontally center 40%
-    #     top = int(0.30 * H)
-    #     bottom = int(0.50 * H)
-    #     left = int(0.45 * W)
-    #     right = int(0.55 * W)
-
-    #     chest = player_crop[top:bottom, left:right]
-
-    #     # Convert to HSV and apply saturation mask
-    #     hsv = cv2.cvtColor(chest, cv2.COLOR_BGR2HSV)
-    #     sat = hsv[:, :, 1]
-    #     mask = sat > 40
-    #     chest_pixels = chest[mask]
-
-    #     # Fallback if too few pixels after filtering
-    #     if chest_pixels.size < (chest.size // 10):
-    #         chest_pixels = chest.reshape(-1, 3)
-
-    #     # Perform k-means clustering (assuming self.get_clustering_model exists)
-    #     kmeans = self.get_clustering_model(chest_pixels)
-
-    #     # Determine background cluster by checking corners
-    #     h, w = chest.shape[:2]
-    #     corners = [(0, 0), (0, w-1), (h-1, 0), (h-1, w-1)]
-    #     corner_clusters = []
-    #     for y, x in corners:
-    #         pixel = chest[y, x].reshape(1, 3)
-    #         corner_clusters.append(kmeans.predict(pixel)[0])
-
-    #     non_player = max(set(corner_clusters), key=corner_clusters.count)
-    #     player_cl = 1 - non_player  # Assume 2 clusters
-
-    #     # Return the dominant chest color cluster
-    #     return kmeans.cluster_centers_[player_cl]
+    #     return kmeans
 
     def get_player_color(self, frame, bbox, n_clusters=3):
         """
@@ -129,7 +34,7 @@ class TeamAssigner:
 
         # 2) Define chest region (vert 30–50%, horiz center 45–55%)
         top    = int(0.30 * H)
-        bottom = int(0.50 * H)
+        bottom = int(0.70 * H)
         left   = int(0.45 * W)
         right  = int(0.55 * W)
         chest  = player_crop[top:bottom, left:right]
@@ -137,7 +42,7 @@ class TeamAssigner:
         # 3) Filter out low-saturation pixels
         hsv = cv2.cvtColor(chest, cv2.COLOR_BGR2HSV)
         sat = hsv[:, :, 1]
-        mask = sat > 40
+        mask = sat > 60
         chest_pixels = chest[mask]
 
         # 4) Fallback if too few remain
@@ -146,47 +51,137 @@ class TeamAssigner:
 
         kmeans = self.make_kmeans(chest_pixels, n_clusters)
 
-        # if isinstance(kmeans, np.ndarray):  # early exit: single color fallback
-        #     return kmeans[0]
-
-        # 6) Choose background cluster as centroid closest to white
+        # 5) Count pixels in each cluster
+        labels = kmeans.labels_
         centers = kmeans.cluster_centers_  # shape (n_clusters, 3)
+        
+        # Count how many pixels belong to each cluster
+        unique_labels, counts = np.unique(labels, return_counts=True)
+        
+        # Find the cluster with the fewest pixels
+        smallest_cluster = unique_labels[np.argmin(counts)]
+        
+        # Create mask to exclude the smallest cluster
+        valid_clusters = unique_labels[unique_labels != smallest_cluster]
+        
+        # 6) Choose background cluster as centroid closest to white (among valid clusters)
+        valid_centers = centers[valid_clusters]
         # compute Euclidean distance to white [255,255,255] in BGR space
-        dists_to_white = np.linalg.norm(centers - np.array([255,255,255]), axis=1)
+        dists_to_white = np.linalg.norm(valid_centers - np.array([255,255,255]), axis=1)
 
-        bg_cluster = int(np.argmin(dists_to_white))
+        bg_cluster_idx = np.argmin(dists_to_white)
+        bg_cluster = valid_clusters[bg_cluster_idx]
 
-        # 7) Player cluster is the one farthest from white
-        player_cluster = int(np.argmax(dists_to_white))
+        # 7) Player cluster is the one farthest from white (among valid clusters)
+        player_cluster_idx = np.argmax(dists_to_white)
+        player_cluster = valid_clusters[player_cluster_idx]
 
         # 8) Return that cluster center
         center = centers[player_cluster]
         return center
 
-
     def make_kmeans(self, pixels, n_clusters):
         """
-        Internal helper to create and fit a KMeans model.
+        Internal helper to create and fit a KMeans model with dynamic cluster adjustment.
         """
-        # ensure a 2D array
-        data = pixels.reshape(-1, 3)
-        unique_colors = np.unique(data, axis=0)
-
-        if unique_colors.shape[0] < n_clusters:
-            # Not enough colors to form clusters — return the one dominant color
-            # Here we assume the most frequent color is best
-            values, counts = np.unique(data, axis=0, return_counts=True)
-            most_common = values[np.argmax(counts)]
-            return np.array(most_common, dtype=np.float32)  # early return with a color array
+        # ensure a 2D array and convert to float32
+        data = pixels.reshape(-1, 3).astype(np.float32)
         
-        kmeans = KMeans(
-            n_clusters=n_clusters,
-            init="k-means++",
-            n_init=10,
-            random_state=42
-        )
-        kmeans.fit(data)
-        return kmeans
+        # Get unique colors and their counts
+        unique_colors, counts = np.unique(data, axis=0, return_counts=True)
+        n_unique = unique_colors.shape[0]
+        
+        # Strategy 1: Adjust n_clusters based on available unique colors
+        effective_clusters = min(n_clusters, n_unique)
+        
+        # Strategy 2: If we have very few unique colors, return the most dominant one
+        if n_unique == 1:
+            return unique_colors[0].astype(np.float32)
+        
+        try:
+            kmeans = KMeans(
+                n_clusters=effective_clusters,
+                init="k-means++",
+                n_init=10,
+                random_state=42,
+                max_iter=100
+            )
+            kmeans.fit(data)
+            return kmeans
+            
+        except Exception as e:
+            print(f"KMeans failed: {e}. Falling back to most frequent color.")
+            # Fallback: return the most frequent color
+            unique_colors, counts = np.unique(pixels.reshape(-1, 3), axis=0, return_counts=True)
+            most_frequent_color = unique_colors[np.argmax(counts)]
+            return most_frequent_color.astype(np.float32)
+
+    def bin_colors(self, colors, bin_size=16):
+        """
+        Bins colors to reduce precision and potentially increase diversity.
+        """
+        # Round colors to nearest bin_size
+        binned = (colors // bin_size) * bin_size
+        return binned.astype(np.float32)
+    
+    def add_color_noise(self, colors, noise_level=5):
+        """
+        Adds small random noise to colors to increase diversity.
+        """
+        noise = np.random.randint(-noise_level, noise_level + 1, colors.shape)
+        noisy_colors = colors.astype(np.float32) + noise.astype(np.float32)
+        # Clamp values to valid range
+        noisy_colors = np.clip(noisy_colors, 0, 255)
+        return noisy_colors.astype(np.float32)
+
+    def get_player_color_adaptive(self, frame, bbox):
+        """
+        Adaptive method that tries different strategies to extract player color.
+        """
+        # Try with 3 clusters first
+        try:
+            return self.get_player_color(frame, bbox, n_clusters=3)
+        except:
+            pass
+        
+        # Fall back to 2 clusters
+        try:
+            return self.get_player_color(frame, bbox, n_clusters=2)
+        except:
+            pass
+        
+        # Final fallback: extract dominant color without clustering
+        return self.get_dominant_color_simple(frame, bbox)
+    
+    def get_dominant_color_simple(self, frame, bbox):
+        """
+        Simple fallback method to get dominant color without clustering.
+        """
+        x1, y1, x2, y2 = map(int, bbox)
+        player_crop = frame[y1:y2, x1:x2]
+        H, W = player_crop.shape[:2]
+
+        # Define chest region
+        top = int(0.30 * H)
+        bottom = int(0.50 * H)
+        left = int(0.45 * W)
+        right = int(0.55 * W)
+        chest = player_crop[top:bottom, left:right]
+
+        # Convert to HSV and filter
+        hsv = cv2.cvtColor(chest, cv2.COLOR_BGR2HSV)
+        sat = hsv[:, :, 1]
+        mask = sat > 40
+        
+        if np.any(mask):
+            chest_pixels = chest[mask]
+        else:
+            chest_pixels = chest.reshape(-1, 3)
+        
+        # Return most frequent color
+        unique_colors, counts = np.unique(chest_pixels, axis=0, return_counts=True)
+        most_frequent = unique_colors[np.argmax(counts)]
+        return most_frequent.astype(np.float32)
 
     # convenience wrappers
     def get_player_color_2(self, frame, bbox):
@@ -195,45 +190,150 @@ class TeamAssigner:
     def get_player_color_3(self, frame, bbox):
         return self.get_player_color(frame, bbox, n_clusters=3)
 
-
-
-    def assign_team_color(self,frame, player_detections):
-        
-        # for each player detected, classify them as team 1 or 2
+    def assign_team_color(self, frame, player_detections):
+        """
+        Assign team colors using robust color extraction.
+        This method MUST be called before get_player_team.
+        """
         player_colors = []
         for _, player_detection in player_detections.items():
             bbox = player_detection["bbox"]
-            player_color =  self.get_player_color(frame,bbox)
-            player_colors.append(player_color)
+            # Use adaptive method for robust color extraction
+            player_color = self.get_player_color_adaptive(frame, bbox)
+            
+            # Ensure we have a valid color array
+            if isinstance(player_color, np.ndarray) and player_color.size >= 3:
+                player_colors.append(player_color.flatten()[:3])
         
-        kmeans = KMeans(n_clusters=2, init="k-means++",n_init=10)
-        kmeans.fit(player_colors)
+        if len(player_colors) < 2:
+            print("Warning: Not enough player colors detected for team assignment")
+            # Set default teams
+            self.teams_assigned = True
+            self.team_colors[1] = np.array([255, 0, 0], dtype=np.float32)  # Blue
+            self.team_colors[2] = np.array([0, 0, 255], dtype=np.float32)  # Red
+            self.kmeans = self.create_default_classifier()
+            return
+        
+        # Convert to numpy array with consistent dtype
+        player_colors = np.array(player_colors, dtype=np.float32)
+        
+        # Use 2 clusters for team assignment (more reliable)
+        try:
+            kmeans = KMeans(n_clusters=2, init="k-means++", n_init=10, random_state=42)
+            kmeans.fit(player_colors)
+            
+            self.kmeans = kmeans
+            self.team_colors[1] = kmeans.cluster_centers_[0].astype(np.float32)
+            self.team_colors[2] = kmeans.cluster_centers_[1].astype(np.float32)
+            self.teams_assigned = True
+            
+        except Exception as e:
+            print(f"Error in team color assignment: {e}")
+            # Fallback: assign teams based on color similarity
+            self.assign_teams_by_similarity(player_colors)
 
-        self.kmeans = kmeans
+    def create_default_classifier(self):
+        """
+        Creates a default classifier when team assignment fails.
+        """
+        class DefaultTeamClassifier:
+            def __init__(self, team1_color, team2_color):
+                self.team1_color = team1_color
+                self.team2_color = team2_color
+            
+            def predict(self, color):
+                color = color.reshape(-1, 3)[0]
+                dist1 = np.linalg.norm(color - self.team1_color)
+                dist2 = np.linalg.norm(color - self.team2_color)
+                return [0 if dist1 < dist2 else 1]
+        
+        return DefaultTeamClassifier(self.team_colors[1], self.team_colors[2])
 
-        self.team_colors[1] = kmeans.cluster_centers_[0]
-        self.team_colors[2] = kmeans.cluster_centers_[1]
+    def get_team_color_for_drawing(self, team_id):
+        """
+        Get team color in OpenCV-compatible format
+        """
+        if team_id in self.team_colors:
+            color = self.team_colors[team_id]
+            if isinstance(color, np.ndarray):
+                color = color.flatten()
+            # Convert to integers and ensure BGR format
+            return tuple(int(c) for c in color[:3])
+        else:
+            # Default colors if team not found
+            default_colors = {
+                1: (255, 0, 0),    # Blue team
+                2: (0, 0, 255),    # Red team
+            }
+            return default_colors.get(team_id, (0, 255, 0))  # Default green
 
+    def assign_teams_by_similarity(self, player_colors):
+        """
+        Fallback method to assign teams based on color similarity.
+        """
+        if len(player_colors) < 2:
+            return
+        
+        # Use first two colors as team representatives
+        self.team_colors[1] = player_colors[0]
+        self.team_colors[2] = player_colors[1] if len(player_colors) > 1 else player_colors[0]
+        
+        # Create a simple classifier based on distance
+        class SimpleTeamClassifier:
+            def __init__(self, team1_color, team2_color):
+                self.team1_color = team1_color
+                self.team2_color = team2_color
+            
+            def predict(self, color):
+                color = color.reshape(-1, 3)[0]
+                dist1 = np.linalg.norm(color - self.team1_color)
+                dist2 = np.linalg.norm(color - self.team2_color)
+                return [0 if dist1 < dist2 else 1]
+        
+        self.kmeans = SimpleTeamClassifier(self.team_colors[1], self.team_colors[2])
+        self.teams_assigned = True
 
-    # Assign players to teams (and not just colours)
-
-    def get_player_team(self,frame,player_bbox,player_id):
-
-        # gets the team values if already done
+    def get_player_team(self, frame, player_bbox, player_id):
+        """
+        Get player team assignment with robust error handling.
+        """
+        # Check if already assigned
         if player_id in self.player_team_dict:
             return self.player_team_dict[player_id]
 
-        player_color = self.get_player_color(frame,player_bbox)
+        # Check if teams have been assigned
+        if not self.teams_assigned or self.kmeans is None:
+            print(f"Warning: Teams not assigned yet. Call assign_team_color first. Defaulting player {player_id} to team 1.")
+            self.player_team_dict[player_id] = 1
+            return 1
 
-        # use image of shirt to predict team id
-        team_id = self.kmeans.predict(player_color.reshape(1,-1))[0]
-        # ensures team id is 1 or 0
-        team_id+=1
+        try:
+            player_color = self.get_player_color_adaptive(frame, player_bbox)
+            
+            # Ensure we have a valid color with consistent dtype
+            if isinstance(player_color, np.ndarray):
+                player_color = player_color.flatten()[:3].astype(np.float32).reshape(1, -1)
+            else:
+                # Fallback to a default team
+                self.player_team_dict[player_id] = 1
+                return 1
 
-        if player_id ==91:
-            team_id=1
+            # Use the classifier to predict team
+            if hasattr(self.kmeans, 'predict'):
+                team_id = self.kmeans.predict(player_color)[0]
+                team_id += 1  # Convert to 1-based indexing
+            else:
+                team_id = 1  # Default assignment
 
-        # add team id to dictionary
-        self.player_team_dict[player_id] = team_id
+            # Special case handling
+            if player_id == 91:
+                team_id = 1
 
-        return team_id
+            self.player_team_dict[player_id] = team_id
+            return team_id
+            
+        except Exception as e:
+            print(f"Error assigning team for player {player_id}: {e}")
+            # Default assignment
+            self.player_team_dict[player_id] = 1
+            return 1

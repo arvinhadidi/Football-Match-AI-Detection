@@ -5,7 +5,6 @@ from utils import read_video, save_video
 from trackers import Tracker
 from tkinter import Tk, filedialog
 import cv2
-from team_assigner import TeamAssigner
 from player_ball_assigner import PlayerBallAssigner
 from homography.homography import detect_pitch_keypoints, compute_homography, warp_point, return_api_request
 from utils.bbox_utils import get_center_of_bbox
@@ -51,26 +50,49 @@ def main():
     # Interpolate Ball Positions
     tracks["ball"] = tracker.interpolate_ball_positions(tracks["ball"])
 
-    # Assign Player Teams
-    team_assigner = TeamAssigner()
+    # # Assign Player Teams
+    # team_assigner = TeamAssigner()
 
-    # build a clean dict of only “real” players (exclude any referee IDs)
+    # # build a clean dict of only “real” players (exclude any referee IDs)
+    # first_frame_players = {
+    #     pid: det
+    #     for pid, det in tracks['players'][0].items()
+    #     if pid not in tracks['referees'][0]
+    # }
+
+    # print(f"First frame has {len(first_frame_players)} players: {list(first_frame_players.keys())}")
+    # print(f"Referee IDs in first frame: {list(tracks['referees'][0].keys())}")
+
+    # team_assigner.assign_team_color(video_frames[0],
+    #                                 first_frame_players)
+    
+    # print(f"Teams assigned: {team_assigner.teams_assigned}")
+    # print(f"Team colors: {team_assigner.team_colors}")
+    # print(f"Kmeans exists: {team_assigner.kmeans is not None}")
+    
+    # # for each frame, assign each player to a team
+    # for frame_num, player_track in enumerate(tracks['players']):
+    #     for player_id, track in player_track.items():
+    #         team = team_assigner.get_player_team(video_frames[frame_num], track['bbox'], player_id)
+
+    #         tracks['players'][frame_num][player_id]['team'] = team 
+    #         tracks['players'][frame_num][player_id]['team_color'] = team_assigner.team_colors[team]
+
     first_frame_players = {
         pid: det
         for pid, det in tracks['players'][0].items()
         if pid not in tracks['referees'][0]
     }
 
-    team_assigner.assign_team_color(video_frames[0],
-                                    first_frame_players)
-    
-    # for each frame, assign each player to a team
+    # Use tracker.team_assigner instead of team_assigner
+    tracker.team_assigner.assign_team_color(video_frames[0], first_frame_players)
+
+    # And in your player assignment loop:
     for frame_num, player_track in enumerate(tracks['players']):
         for player_id, track in player_track.items():
-            team = team_assigner.get_player_team(video_frames[frame_num], track['bbox'], player_id)
-
+            team = tracker.team_assigner.get_player_team(video_frames[frame_num], track['bbox'], player_id)
             tracks['players'][frame_num][player_id]['team'] = team 
-            tracks['players'][frame_num][player_id]['team_color'] = team_assigner.team_colors[team]
+            tracks['players'][frame_num][player_id]['team_color'] = tracker.team_assigner.team_colors[team]
 
     # Assign ball to closest player
     player_assigner = PlayerBallAssigner()
