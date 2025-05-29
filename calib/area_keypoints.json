@@ -1,0 +1,22 @@
+{
+    "SixYardBox_TL": [115, 14],
+    "SixYardBox_TR": [185, 14],
+    "SixYardBox_BL": [115, 34],
+    "SixYardBox_BR": [185, 34],
+    "EighteenYardBox_TL": [84, 14],
+    "EighteenYardBox_TR": [221, 14],
+    "EighteenYardBox_BL": [84, 72],
+    "EighteenYardBox_BR": [221, 72],
+    "EighteenYardDee_TL": [122, 73],
+    "EighteenYardDee_TR": [182, 73],
+    "EighteenYardDee_BL": [122, 94],
+    "EighteenYardDee_BR": [182, 94],
+    "LeftCentreCircle_TL": [117, 235],
+    "LeftCentreCircle_TR": [187, 235],
+    "LeftCentreCircle_BL": [117, 251],
+    "LeftCentreCircle_BR": [187, 251],
+    "RightCentreCircle_TL": [117, 272],
+    "RightCentreCircle_TR": [150, 272],
+    "RightCentreCircle_BL": [117, 305],
+    "RightCentreCircle_BR": [150, 305]
+}

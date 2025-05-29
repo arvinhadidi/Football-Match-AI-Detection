@@ -48,7 +48,7 @@ class Tracker:
         detections = []
         # run thru all frames of video, in steps of eg. 20 
         for i in range (0, len(frames), batch_size):
-            print(f"Processing frames {i} to {min(i+batch_size, len(frames))}")  # Debug print
+            print(f"Processing frames {i} to {min(i+batch_size, len(frames))} out of {len(frames)} total")  # Debug print
             detections_batch = self.model.predict(frames[i:i+batch_size], conf=0.3) # CHANGED CONF FROM 0.1 TO 0.3
             detections += detections_batch
 

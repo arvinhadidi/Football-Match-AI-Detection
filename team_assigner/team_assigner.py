@@ -32,7 +32,7 @@ class TeamAssigner:
         player_crop = frame[y1:y2, x1:x2]
         H, W = player_crop.shape[:2]
 
-        # 2) Define chest region (vert 30–50%, horiz center 45–55%)
+        # 2) Define chest region (vert 30–70%, horiz center 45–55%)
         top    = int(0.30 * H)
         bottom = int(0.70 * H)
         left   = int(0.45 * W)
