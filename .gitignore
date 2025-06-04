@@ -1,6 +1,7 @@
 *.mp4
 *.pt
 *.avi
+*.jpg
 
 # Environments
 .env

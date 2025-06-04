@@ -7,12 +7,14 @@ from tkinter import Tk, filedialog
 import cv2
 from player_ball_assigner import PlayerBallAssigner
 # from homography.homography import detect_pitch_keypoints, compute_homography, warp_point, return_api_request
-from homography.homography_areas import detect_pitch_keypoints, compute_homography, warp_point, return_api_request
+# from homography.homography_areas import detect_pitch_keypoints, compute_homography, warp_point, return_api_request
 from utils.bbox_utils import get_center_of_bbox
 from homography.homography_diagnostic import diagnose_homography, run_diagnostics
 from homography.fix_homography_issues import fix_homography_issues
+from homography.areas_keypoints_homography import match_keypoints_to_areas, compute_homography, warp_point
 # from homography.hough import debug_line_detection, detect_pitch_keypoints_with_fallback
 # from homography.hough import detect_pitch_keypoints_hough, debug_line_detection
+from homography.enhanced_homography_diagnostic import run_full_diagnostic
 
 with open("calib/map_keypoints.json") as f:
     map_keypoints = json.load(f)
@@ -65,6 +67,12 @@ def main():
     # Use tracker.team_assigner instead of team_assigner
     tracker.team_assigner.assign_team_color(video_frames[0], first_frame_players)
 
+    result = run_full_diagnostic(
+        frame=video_frames[0],
+        map_img_path="calib/map.jpg", 
+        map_keypoints_path="calib/map_keypoints.json"
+    )
+
     # And in your player assignment loop:
     for frame_num, player_track in enumerate(tracks['players']):
         for player_id, track in player_track.items():
@@ -96,13 +104,7 @@ def main():
     map_img = cv2.imread("calib/map.jpg")
     if map_img is None:
         raise FileNotFoundError("calib/map.jpg not found!")
-    shortened_map_keypoints = load_map_keypoints("calib/area_keypoints.json")
-    # Prepare the ordered list of map_pts matching Roboflow classes
-    # e.g. Roboflow predicts labels in this order:
-    # run_diagnostics()  # This will analyze your map_keypoints.json file
-    # diagnose_homography(video_frames[0], map_img, map_keypoints)  # Analyze first frame
-    # rf_labels = list(map_keypoints.keys())  # extend to all classes you use
-    # print(rf_labels)
+    shortened_map_keypoints = load_map_keypoints("calib/map_keypoints.json")
 
     # 9) Homography + warp loop
     RECALIBRATE_EVERY  = 30
@@ -116,7 +118,7 @@ def main():
         # — 9A) (Re)compute H every RECALIBRATE_EVERY frames —
         if fn % RECALIBRATE_EVERY == 0: # and fn != 0
             # image_pts, labels = detect_pitch_keypoints(frame)
-            image_pts, labels = detect_pitch_keypoints(frame)
+            image_pts, labels = match_keypoints_to_areas(frame)
             print("IMAGEPTS")
             print(image_pts)
             print("LABELS")

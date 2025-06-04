@@ -1,0 +1,9 @@
+2D PITCH OVERLAY INFO
+=====================
+
+Frame size: 1920x1080
+Map warped to frame perspective
+Overlay alpha: 0.4
+Files created:
+  - 05_2d_pitch_overlay.jpg (blended result)
+  - 05_warped_map_alone.jpg (warped map only)

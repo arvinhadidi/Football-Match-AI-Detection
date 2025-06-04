@@ -1,0 +1,15 @@
+HOMOGRAPHY ACCURACY REPORT
+==========================
+
+Total points used: 5
+Average error: 51.59 pixels
+Maximum error: 257.93 pixels
+Minimum error: 0.00 pixels
+Standard deviation: 103.17 pixels
+
+POINT-BY-POINT ERRORS:
+ 0. LMC          | Error:   0.00px | Src: ( 443.0, 405.0) -> Expected: ( 117.0, 270.0) | Warped: ( 117.0, 270.0)
+ 1. BLArc        | Error:   0.00px | Src: (1490.0, 306.0) -> Expected: ( 121.0, 463.0) | Warped: ( 121.0, 463.0)
+ 2. LML          | Error:   0.00px | Src: ( 452.0, 565.0) -> Expected: (  15.0, 270.0) | Warped: (  15.0, 270.0)
+ 3. RML          | Error: 257.93px | Src: (  80.0, 493.0) -> Expected: ( 291.0, 270.0) | Warped: (  65.3, 145.2)
+ 4. BL18MC       | Error:   0.00px | Src: (1638.0, 377.0) -> Expected: (  84.0, 463.0) | Warped: (  84.0, 463.0)

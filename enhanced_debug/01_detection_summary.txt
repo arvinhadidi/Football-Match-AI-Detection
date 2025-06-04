@@ -1,0 +1,18 @@
+DETECTION SUMMARY
+================
+
+Total keypoints detected: 5
+Total areas detected: 4
+
+DETECTED KEYPOINTS:
+  TR18MC (10): (157.0, 227.0)
+  RMC (15): (1031.0, 196.0)
+  LMC (16): (1021.0, 302.0)
+  LML (17): (1016.0, 435.0)
+  RML (14): (732.0, 355.0)
+
+DETECTED AREAS:
+  LeftHalf: center=(578.0, 440.0), size=(1130.0x560.0)
+  RightCentreCircle: center=(1198.5, 378.0), size=(163.0x142.0)
+  RightHalf: center=(1201.0, 449.0), size=(152.0x538.0)
+  LeftCentreCircle: center=(933.5, 376.0), size=(365.0x132.0)

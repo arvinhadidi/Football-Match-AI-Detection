@@ -1,0 +1,21 @@
+KEYPOINT MATCHING REPORT
+========================
+
+Successfully matched: 2/5 keypoints
+Matching rate: 40.0%
+
+MATCHED KEYPOINTS (GREEN):
+  ✓ LML
+  ✓ RML
+
+UNMATCHED KEYPOINTS (RED):
+  ✗ TR18MC at (157.0, 227.0)
+  ✗ RMC at (1031.0, 196.0)
+  ✗ LMC at (1021.0, 302.0)
+
+MATCHING ANALYSIS:
+Possible reasons for unmatched keypoints:
+1. Keypoint is outside any detected area boundaries
+2. Keypoint is in an area but not expected to be there
+3. Area detection failed for the keypoint's expected area
+4. Keypoint label is not in the keypoints_by_area mapping

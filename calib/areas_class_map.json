@@ -3,5 +3,7 @@
     "1": "EighteenYardBox",
     "2": "SixYardBox",
     "3": "LeftCentreCircle",
-    "5": "RightCentreCircle"
+    "4": "LeftHalf",
+    "5": "RightCentreCircle",
+    "6": "RightHalf"
 }
