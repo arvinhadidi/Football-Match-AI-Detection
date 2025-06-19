@@ -1,0 +1,18 @@
+HOMOGRAPHY COMPUTATION FAILED
+=============================
+
+Error: OpenCV(4.10.0) :-1: error: (-5:Bad argument) in function 'perspectiveTransform'
+> Overload resolution failed:
+>  - m is not a numpy array, neither a scalar
+>  - Expected Ptr<cv::UMat> for argument 'm'
+
+Valid points available: 8
+Points used:
+  1. LMC: src=(445.0,401.0) -> dst=(117.0,270.0)
+  2. BLArc: src=(1459.0,306.0) -> dst=(121.0,463.0)
+  3. LML: src=(462.0,568.0) -> dst=(15.0,270.0)
+  4. BRC: src=(1896.0,354.0) -> dst=(291.0,521.0)
+  5. BL18MC: src=(1616.0,375.0) -> dst=(84.0,463.0)
+  6. BPS: src=(1859.0,488.0) -> dst=(150.0,480.0)
+  7. BL6MC: src=(1887.0,420.0) -> dst=(117.0,501.0)
+  8. BL6ML: src=(1873.0,292.0) -> dst=(117.0,521.0)

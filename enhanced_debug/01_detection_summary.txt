@@ -1,18 +1,21 @@
 DETECTION SUMMARY
 ================
 
-Total keypoints detected: 5
-Total areas detected: 4
+Total keypoints detected: 7
+Total areas detected: 5
 
 DETECTED KEYPOINTS:
-  TR18MC (10): (157.0, 227.0)
-  RMC (15): (1031.0, 196.0)
-  LMC (16): (1021.0, 302.0)
-  LML (17): (1016.0, 435.0)
-  RML (14): (732.0, 355.0)
+  RMC (16): (74.0, 189.0)
+  LMC (17): (83.0, 332.0)
+  BR18MC (20): (948.0, 98.0)
+  BRArc (21): (1069.0, 148.0)
+  BLArc (22): (1246.0, 228.0)
+  BRC (27): (1135.0, 45.0)
+  BCS (19): (373.0, 241.0)
 
 DETECTED AREAS:
-  LeftHalf: center=(578.0, 440.0), size=(1130.0x560.0)
-  RightCentreCircle: center=(1198.5, 378.0), size=(163.0x142.0)
-  RightHalf: center=(1201.0, 449.0), size=(152.0x538.0)
-  LeftCentreCircle: center=(933.5, 376.0), size=(365.0x132.0)
+  RightHalf: center=(669.0, 369.5), size=(1164.0x687.0)
+  EighteenYardDee: center=(1158.5, 191.5), size=(229.0x83.0)
+  RightCentreCircle: center=(229.0, 264.5), size=(318.0x141.0)
+  LeftCentreCircle: center=(41.0, 266.0), size=(82.0x150.0)
+  EighteenYardBox: center=(1110.0, 157.0), size=(340.0x168.0)

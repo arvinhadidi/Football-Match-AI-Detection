@@ -1,17 +1,19 @@
 KEYPOINT MATCHING REPORT
 ========================
 
-Successfully matched: 2/5 keypoints
-Matching rate: 40.0%
+Successfully matched: 7/7 keypoints
+Matching rate: 100.0%
 
 MATCHED KEYPOINTS (GREEN):
-  ✓ LML
-  ✓ RML
+  ✓ BRC
+  ✓ BRArc
+  ✓ BLArc
+  ✓ RMC
+  ✓ LMC
+  ✓ BCS
+  ✓ BR18MC
 
 UNMATCHED KEYPOINTS (RED):
-  ✗ TR18MC at (157.0, 227.0)
-  ✗ RMC at (1031.0, 196.0)
-  ✗ LMC at (1021.0, 302.0)
 
 MATCHING ANALYSIS:
 Possible reasons for unmatched keypoints:

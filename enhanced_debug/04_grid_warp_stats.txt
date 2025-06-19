@@ -1,7 +1,7 @@
 GRID WARP STATISTICS
 ====================
 
-Total grid points: 858
-Points in bounds: 361
-Points out of bounds: 497
-Success rate: 42.1%
+Total grid points: 390
+Points in bounds: 321
+Points out of bounds: 69
+Success rate: 82.3%

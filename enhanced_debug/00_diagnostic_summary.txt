@@ -5,10 +5,13 @@ Map: calib/map.jpg
 Map keypoints: calib/map_keypoints.json
 
 RESULTS:
-Status: insufficient_points
-Keypoints detected: 5
-Areas detected: 4
-Points matched: 2
+Status: success
+Keypoints detected: 7
+Areas detected: 5
+Points matched: 7
+Homography computed successfully
+Average reprojection error: 6.75 pixels
+Maximum reprojection error: 27.38 pixels
 
 FILES CREATED:
 01_all_detections.jpg - All detected keypoints and areas
